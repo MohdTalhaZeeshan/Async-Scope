@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:netsuite="http://www.mulesoft.org/schema/mule/netsuite" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/netsuite http://www.mulesoft.org/schema/mule/netsuite/current/mule-netsuite.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5999ad1c-3038-4263-b390-267f60bf1d8f" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="async-scopeFlow" doc:id="6475ff2d-de31-42de-beb6-4b5887097a99" >
+		<http:listener doc:name="Listener" doc:id="a2c70493-a2f7-446c-949c-8b91aaf8edd0" config-ref="HTTP_Listener_config" path="test"/>
+		<set-variable value="value" doc:name="Set Variable" doc:id="06a6f2b4-de78-4291-ae8f-850a9a4d47c3" variableName="test"/>
+		<async doc:name="Async" doc:id="3454de72-9fd5-4ee1-b4fa-a3f216d90292" >
+			<logger level="INFO" doc:name="Async entry logger." doc:id="cbb4b3c2-d72f-4f4a-a8e3-ef2451622995" message="Async entry logger" />
+			<ee:transform doc:name="Inside Async." doc:id="47a3c341-c9f5-4f0a-b7d6-0a5f2715cc38">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			<logger level="INFO" doc:name="Async exit logger." doc:id="3af15a09-8ef1-4a94-8596-e1e58c890ac0" message="Async exit logger" />
+		</async>
+		<logger level="INFO" doc:name="Logger" doc:id="d8315bb0-ca62-43ce-ac68-b4ed3daa8781" message="End of the Flow."/>
+	</flow>
+	<flow name="async-scopeFlow1" doc:id="f4639fe1-ad9b-4de4-b034-e31296f74f16" >
+		<http:listener doc:name="Listener" doc:id="c0dd2d07-98f9-42a3-a1ab-81baa0f59702" config-ref="HTTP_Listener_config" path="test1"/>
+		<set-variable value="value1" doc:name="Set Variable" doc:id="ce64babc-ba87-44f4-9c81-840a2c5ebea6" variableName="test1"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4165ae4d-12af-4d9f-a0e2-d5f55022ac7c" message="starting of the logger"/>
+		<ee:transform doc:name="Transform Message" doc:id="6ee77ef0-807c-4c99-8c61-9520f31655c8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="c835dc88-2032-4eed-a0a0-4b85608af75b" message="#[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ec8145a4-3d08-418b-b8a8-229c385da568" message="end of the logger"/>
+	</flow>
+</mule>
